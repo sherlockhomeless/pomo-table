@@ -1,0 +1,71 @@
+<head>
+
+<meta charset="UTF-8">
+<header>
+    <title>
+    Cool AI-supported Pomo-Time-Table-Generator
+    </title>
+</header>
+    <script type="text/javascript">
+
+        function add_minutes(date, min){
+            let current_mins = date.getMinutes()
+            if (current_mins + min < 60){
+                date.setMinutes(current_mins + min)
+            } else {
+                date.setHours(date.getHours()+1)
+                date.setMinutes((date.getMinutes()+min)%60)
+            }
+            return date
+        }
+
+        function fill(){
+            const length_session = 25
+            const length_pause = 5
+            const zeroPad = (num, places) => String(num).padStart(places, '0')
+
+            let hour = document.getElementById('hour').value
+            let min =  document.getElementById('min').value
+            min = zeroPad(min,2)
+            let sessions = document.getElementById('sessions').value
+            let time_para = document.getElementById('times')
+
+            let slots_str = ""
+            let cur_date = new Date('2000-12-24T' + hour +':' + min + ':00')
+            let is_session = true
+
+            console.log(cur_date);
+
+            for (let i = 1; i <= sessions; i++){
+                let cur_hours = cur_date.getHours()
+                let cur_min = cur_date.getMinutes()
+                if (is_session){
+                    cur_date = add_minutes(cur_date, 25)
+                    slots_str += "Session " + i + " => " + zeroPad(cur_hours, 2) + ":" + zeroPad(cur_min,2) + "-" + zeroPad(cur_date.getHours(),2) + ":" + zeroPad(cur_date.getMinutes() ,2)+ "\n"
+                    is_session = false
+                } else {
+                    i--
+                    cur_date = add_minutes(cur_date, 5)
+                    slots_str += "Pause " + i + " => " + zeroPad(cur_hours,2) + ":" + zeroPad(cur_min,2) + "-" + zeroPad(cur_date.getHours(),2) + ":" + zeroPad(cur_date.getMinutes(),2) + "\n"
+                    is_session = true
+                }
+            }
+            console.log(slots_str);
+            time_para.innerText = slots_str
+        }
+    </script>
+</head>
+<body>
+    <p>Start-Zeit</p>
+    <form id="inputs">
+        Stunde: <input type="text" name="hour" value="10" onchange="fill();" id="hour">
+        Min: <input type="text" name="min" value="00" id="min" onchange="fill();">
+        Sessions: <input type="text" name="sessions" value="4" id="sessions" onchange="fill();">
+    </form>
+
+    <p id="times"></p>
+    <script type="text/javascript">fill();</script>
+    <iframe src="https://giphy.com/embed/Fn1XLXZORb7H2" width="270" height="480" frameBorder="0" class="giphy-embed" allowFullScreen></iframe><p><a href="https://giphy.com/gifs/funny-genius-productivity-Fn1XLXZORb7H2">via GIPHY</a></p>
+
+
+</body>
